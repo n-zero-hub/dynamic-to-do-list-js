@@ -20,10 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskItem = document.createElement('li');
         taskItem.textContent = taskText;
 
+        // Add a class to the list item for consistent styling
+        taskItem.classList.add('task-item');
+
         // Create a "Remove" button for the task
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Remove';
-        removeButton.className = 'remove-btn';
+        removeButton.classList.add('remove-btn'); // Add class for styling the remove button
 
         // Add an event listener to the "Remove" button
         removeButton.onclick = () => {
@@ -38,6 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Clear the task input field
         taskInput.value = '';
+
+        // Optionally, add a temporary highlight effect for the newly added task
+        taskItem.classList.add('highlight');
+        setTimeout(() => {
+            taskItem.classList.remove('highlight');
+        }, 1000); // Remove the highlight class after 1 second
     }
 
     // Event listener for the "Add Task" button
