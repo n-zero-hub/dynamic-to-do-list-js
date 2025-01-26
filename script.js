@@ -1,61 +1,70 @@
-// Run code after the DOM has fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Select DOM elements
     const addButton = document.getElementById('add-task-btn');
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
 
-    // Function to add a task
-    function addTask() {
-        // Retrieve and trim the task input value
-        const taskText = taskInput.value.trim();
+    // Function to load tasks from Local Storage
+    function loadTasks() {
+        const storedTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        storedTasks.forEach(taskText => addTask(taskText, false)); // Pass 'false' to prevent duplicate saving
+    }
 
-        // Check if the input is empty
-        if (taskText === '') {
-            alert('Please enter a task!');
+    // Function to save tasks to Local Storage
+    function saveTasks() {
+        const tasks = Array.from(taskList.children).map(li => li.firstChild.textContent);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    // Function to add a task to the list
+    function addTask(taskText, save = true) {
+        if (!taskText.trim()) {
+            alert('Please enter a valid task!');
             return;
         }
 
-        // Create a new list item (li) for the task
+        // Create task list item (li)
         const taskItem = document.createElement('li');
         taskItem.textContent = taskText;
-
-        // Add a class to the list item for consistent styling
         taskItem.classList.add('task-item');
 
-        // Create a "Remove" button for the task
+        // Create remove button
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Remove';
-        removeButton.classList.add('remove-btn'); // Add class for styling the remove button
+        removeButton.classList.add('remove-btn');
 
-        // Add an event listener to the "Remove" button
+        // Remove task logic
         removeButton.onclick = () => {
             taskList.removeChild(taskItem);
+            saveTasks(); // Update Local Storage after removal
         };
 
-        // Append the "Remove" button to the task item
+        // Append remove button to task item
         taskItem.appendChild(removeButton);
 
-        // Append the task item to the task list
+        // Append task item to task list
         taskList.appendChild(taskItem);
 
-        // Clear the task input field
-        taskInput.value = '';
+        // Save to Local Storage if specified
+        if (save) {
+            saveTasks();
+        }
 
-        // Optionally, add a temporary highlight effect for the newly added task
-        taskItem.classList.add('highlight');
-        setTimeout(() => {
-            taskItem.classList.remove('highlight');
-        }, 1000); // Remove the highlight class after 1 second
+        // Clear input field
+        taskInput.value = '';
     }
 
-    // Event listener for the "Add Task" button
-    addButton.addEventListener('click', addTask);
+    // Event listener for "Add Task" button
+    addButton.addEventListener('click', () => {
+        addTask(taskInput.value);
+    });
 
-    // Event listener for the "Enter" key in the input field
-    taskInput.addEventListener('keypress', (event) => {
+    // Event listener for "Enter" key in the input field
+    taskInput.addEventListener('keypress', event => {
         if (event.key === 'Enter') {
-            addTask();
+            addTask(taskInput.value);
         }
     });
+
+    // Load tasks from Local Storage on page load
+    loadTasks();
 });
